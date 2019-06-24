@@ -7,7 +7,14 @@ const cors = require('cors')({origin: true});
 // The Firebase Admin SDK to access the Firebase Realtime Database.
 const admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
+const spawn = require('child-process-promise').spawn;
+const path = require('path');
+const os = require('os');
+const fs = require('fs');
 var db = admin.firestore();
+
+
+
 
 /////////////////Verify Token//////////////////
 exports.auth = functions.region('asia-northeast1').https.onRequest(async (req, res) => {
@@ -53,19 +60,75 @@ exports.getUserRecord = functions.region('asia-northeast1').https.onRequest(asyn
     for(var i = 0; i < arr.length; i++){
       var snap1= await nextCustomerRef.doc(arr[i]['payee']['_path']['segments'][1]).get()
       
-      arr[i]['payee']= snap1.data()['firstName']
+      if(snap1.data()['name']==null){
+        arr[i]['payee']= snap1.data()['FBname']
+      }else{
+        arr[i]['payee']= snap1.data()['name']
+      }
       var snap2 = await nextCustomerRef.doc(arr[i]['payer']['_path']['segments'][1]).get()
  
-      arr[i]['payer']= snap2.data()['firstName']
+      if(snap2.data()['name']==null){
+        arr[i]['payer']= snap2.data()['FBname']
+      }else{
+        arr[i]['payer']= snap2.data()['name']
+      }
       
     }
     res.set('Access-Control-Allow-Origin', '*');
     res.status(200).send(arr);
   }catch(err){
+    res.set('Access-Control-Allow-Origin', '*');
     res.status(400).send(err);
   }
 });
+//獲取ALL使用者轉帳紀錄
+exports.getAllUserRecord = functions.region('asia-northeast1').https.onRequest(async (req, res) => {
+  try{
+    var arr=[];
+    let records = {}; 
+   
+    var nextCustomerRef = db.collection('customer')
+    var recordRef = db.collection('customerTransaction')
+    var snapshot = await recordRef.get()
 
+    if (snapshot.empty) throw "無相關紀錄"
+    
+    snapshot.forEach(doc => {
+      var datamonth = doc.data().time.toDate().getUTCMonth() + 1; //months from 1-12
+      var datayear = doc.data().time.toDate().getUTCFullYear(); //months from 1-12
+      var datadate = doc.data().time.toDate().getUTCDate();
+      var datahour = doc.data().time.toDate().getUTCHours();
+      var datamin = doc.data().time.toDate().getUTCMinutes();
+      var datasecond = doc.data().time.toDate().getUTCSeconds();
+      records = doc.data();
+      records['time'] = datayear + '-' + datamonth + '-' + datadate + ' ' + datahour + ':' + datamin + ':' + datasecond   
+      arr.push(records)
+     
+    });
+    for(var i = 0; i < arr.length; i++){
+      var snap1= await nextCustomerRef.doc(arr[i]['payee']['_path']['segments'][1]).get()
+      
+      if(snap1.data()['name']==null){
+        arr[i]['payee']= snap1.data()['FBname']
+      }else{
+        arr[i]['payee']= snap1.data()['name']
+      }
+      var snap2 = await nextCustomerRef.doc(arr[i]['payer']['_path']['segments'][1]).get()
+ 
+      if(snap2.data()['name']==null){
+        arr[i]['payer']= snap2.data()['FBname']
+      }else{
+        arr[i]['payer']= snap2.data()['name']
+      }
+      
+    }
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(200).send(arr);
+  }catch(err){
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(400).send(err);
+  }
+});
 //獲取員工轉帳紀錄
 exports.getEmployeeRecord = functions.region('asia-northeast1').https.onRequest(async (req, res) => {
   try{
@@ -93,17 +156,71 @@ exports.getEmployeeRecord = functions.region('asia-northeast1').https.onRequest(
     });
     for(var i = 0; i < arr.length; i++){
       var snap1= await nextEmployeeRef.doc(arr[i]['payee']['_path']['segments'][1]).get()
-      arr[i]['payee']= snap1.data()['firstName']
+      if(snap1.data()['name']==null){
+        arr[i]['payee']= snap1.data()['FBname']
+      }else{
+        arr[i]['payee']= snap1.data()['name']
+      }
       var snap2 = await nextEmployeeRef.doc(arr[i]['payer']['_path']['segments'][1]).get()
-      arr[i]['payer']= snap2.data()['firstName']   
+      if(snap2.data()['name']==null){
+        arr[i]['payer']= snap2.data()['FBname']
+      }else{
+        arr[i]['payer']= snap2.data()['name']
+      } 
     }
     res.set('Access-Control-Allow-Origin', '*');
     res.status(200).send(arr);
   }catch(err){
+    res.set('Access-Control-Allow-Origin', '*');
     res.status(400).send(err);
   }
 });
-
+//獲取All員工轉帳紀錄
+exports.getAllEmployeeRecord = functions.region('asia-northeast1').https.onRequest(async (req, res) => {
+  try{
+    let records = {}; 
+    let arr = [];
+   
+   
+    var recordRef = db.collection('employeeTransaction')   
+    var nextEmployeeRef = db.collection('employees')
+    var snapshot = await recordRef.get()
+  
+    if (snapshot.empty) throw "無相關紀錄"
+    snapshot.forEach(doc => {
+        var datamonth = doc.data().time.toDate().getUTCMonth() + 1; //months from 1-12
+        var datayear = doc.data().time.toDate().getUTCFullYear(); //months from 1-12
+        var datadate = doc.data().time.toDate().getUTCDate();
+        var datahour = doc.data().time.toDate().getUTCHours();
+        var datamin = doc.data().time.toDate().getUTCMinutes();
+        var datasecond = doc.data().time.toDate().getUTCSeconds();
+        records = doc.data();
+        records['time'] = datayear + '-' + datamonth + '-' + datadate + ' ' + datahour + ':' + datamin + ':' + datasecond   
+        arr.push(records)
+        records = {};
+    });
+    for(var i = 0; i < arr.length; i++){
+      var snap1= await nextEmployeeRef.doc(arr[i]['payee']['_path']['segments'][1]).get()
+      if(snap1.data()['name']==null){
+        arr[i]['payee']= snap1.data()['FBname']
+      }else{
+        arr[i]['payee']= snap1.data()['name']
+      }
+     
+      var snap2 = await nextEmployeeRef.doc(arr[i]['payer']['_path']['segments'][1]).get()
+      if(snap1.data()['name']==null){
+        arr[i]['payer']= snap2.data()['FBname']
+      }else{
+        arr[i]['payer']= snap2.data()['name']
+      }
+    }
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(200).send(arr);
+  }catch(err){
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(400).send(err);
+  }
+});
 //獲取使用者儲值紀錄
 exports.getUserRechargeRecord = functions.region('asia-northeast1').https.onRequest(async (req, res) => {
   try{
@@ -119,8 +236,6 @@ exports.getUserRechargeRecord = functions.region('asia-northeast1').https.onRequ
    
     snapshot.forEach(doc => {
      
-    
-      
         var datamonth = doc.data().PaymentDate.toDate().getUTCMonth() + 1; //months from 1-12
         var datayear = doc.data().PaymentDate.toDate().getUTCFullYear(); //months from 1-12
         var datadate = doc.data().PaymentDate.toDate().getUTCDate();
@@ -142,6 +257,7 @@ exports.getUserRechargeRecord = functions.region('asia-northeast1').https.onRequ
     res.set('Access-Control-Allow-Origin', '*');
     res.status(200).send(arr);
   }catch(err){
+    res.set('Access-Control-Allow-Origin', '*');
     res.status(400).send(err);
   } 
 });
@@ -185,6 +301,7 @@ exports.getAllRechargeRecord = functions.region('asia-northeast1').https.onReque
     res.set('Access-Control-Allow-Origin', '*');
     res.status(200).send(arr);
   }catch(err){
+    res.set('Access-Control-Allow-Origin', '*');
     res.status(400).send(err);
   } 
 });
@@ -225,9 +342,18 @@ exports.getUserChargeRecord = functions.region('asia-northeast1').https.onReques
  
     for(var i = 0; i < arr.length; i++){
       var snap1= await nextEmployeeRef.doc(arr[i]['payee']['_path']['segments'][1]).get()
-      arr[i]['payee']= snap1.data()['firstName']
+      if(snap1.data()['name']==null){
+        arr[i]['payee']= snap1.data()['FBname']
+      }else{
+        arr[i]['payee']= snap1.data()['name']
+      }
+      
       var snap2 = await nextCustomerRef.doc(arr[i]['payer']['_path']['segments'][1]).get()
-      arr[i]['payer']= snap2.data()['firstName']   
+      if(snap1.data()['name']==null){
+        arr[i]['payer']= snap2.data()['FBname']   
+      }else{
+        arr[i]['payer']= snap2.data()['name']   
+      }
     }
     arr = arr.sort(function (a, b) {
       return a.day > b.day ? 1 : -1;//
@@ -235,10 +361,77 @@ exports.getUserChargeRecord = functions.region('asia-northeast1').https.onReques
     res.set('Access-Control-Allow-Origin', '*');
     res.status(200).send(arr);
   }catch(err){
+    res.set('Access-Control-Allow-Origin', '*');
     res.status(400).send(err);
   } 
 });
 
+//獲取all員工向使用者收費紀錄
+exports.getAllUserChargeRecord = functions.region('asia-northeast1').https.onRequest(async (req, res) => {
+  try{
+ 
+    let charges = {}; 
+    let arr = [];
+    var arr1=[];
+    var chargeRef = db.collection('transaction')
+    var nextEmployeeRef = db.collection('employees')
+    var nextCustomerRef = db.collection('customer')
+    var snapshot = await chargeRef.get()
+
+    if (snapshot.empty) throw "無相關紀錄"
+    
+    snapshot.forEach(doc => {
+     
+      var datamonth = doc.data().time.toDate().getUTCMonth() + 1; //months from 1-12
+      var datayear = doc.data().time.toDate().getUTCFullYear(); //months from 1-12
+      var datadate = doc.data().time.toDate().getUTCDate();
+      var datahour = doc.data().time.toDate().getUTCHours();
+      var datamin = doc.data().time.toDate().getUTCMinutes();
+      var datasecond = doc.data().time.toDate().getUTCSeconds();
+      if(datamonth == new Date(Date.now()).getUTCMonth() + 1 && datayear == new Date(Date.now()).getUTCFullYear()){
+        charges = doc.data();
+        charges['time'] = datayear + '-' + datamonth + '-' + datadate + ' ' + datahour + ':' + datamin + ':' + datasecond
+        charges['day'] = datadate
+        arr.push(charges)
+        charges = {}
+      }
+  
+    });
+
+    console.log('1');
+    for(var i = 0; i < arr.length; i++){
+      console.log('2');
+      console.log(arr[i])
+      var snap1= await nextEmployeeRef.doc(arr[i]['payee']['_path']['segments'][1]).get()
+      console.log('3');
+      console.log(snap1);
+      console.log(snap1.data())
+      if(snap1.data()['name']==null){
+        arr[i]['payee']= snap1.data()['FBname']
+        console.log('4');
+      }else{
+        arr[i]['payee']= snap1.data()['name']
+        console.log('5');
+      }
+     
+      var snap2 = await nextCustomerRef.doc(arr[i]['payer']['_path']['segments'][1]).get()
+      if(snap1.data()['name']==null){
+        arr[i]['payer']= snap2.data()['FBname']   
+      }else{
+        arr[i]['payer']= snap2.data()['name']   
+      }
+    }
+    
+    arr = arr.sort(function (a, b) {
+      return a.day > b.day ? 1 : -1;//
+     });
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(200).send(arr);
+  }catch(err){
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(400).send(err);
+  } 
+});
 
 //////////發送序號//////////
 exports.generateCode = functions.region('asia-northeast1').https.onRequest(async (req, res) => {
@@ -248,35 +441,37 @@ exports.generateCode = functions.region('asia-northeast1').https.onRequest(async
     var point = req.body.point;//鑽石數量
     var quantity = req.body.quantity;//生成數量
     var vipPoint = req.body.vipPoint;//vip點數
-    var deadline = req.body.deadline;//2017-06-01
-    console.log(point)
-    console.log(deadline)
+
+  console.log(req.body)
+  
     for(var i = 0; i<quantity; i++){
-    var code = uuidv4();
-    var codeRef = db.collection('codes')
-    var addDoc = await codeRef.add({
-      code : code,
-      point : point,
-      vipPoint:vipPoint,
-      deadline : deadline,//時效
-      usedStatus : false,//未用過
-      sendStatus: false,//發送狀態
-      time: new Date(Date.now())
-    })
-    arr.push(code)
+        console.log(i)
+      var code = uuidv4();
+        console.log(code)
+      var codeRef = db.collection('codes')
+      var addDoc = await codeRef.add({
+        code : code,
+        point : point,
+        vipPoint:vipPoint,
+        usedStatus : false,//未用過
+        sendStatus: false,//發送狀態
+        time: new Date(Date.now())
+      })
+      arr.push(code)
     }
     
     res.set('Access-Control-Allow-Origin', '*');
     res.status(200).send(arr);
   }catch(err){
+    res.set('Access-Control-Allow-Origin', '*');
     res.status(400).send(err);
   } 
 });
 //////////employee發送序號狀態//////////
-exports.generateCode = functions.region('asia-northeast1').https.onRequest(async (req, res) => {
+exports.changeCodeRule = functions.region('asia-northeast1').https.onRequest(async (req, res) => {
   try{
     if(req.method !== "POST") throw 'Please send a POST request'
-    var code = req.body.code
+    var maincode = req.body.code
     var status = req.body.sendStatus
     var codeRef = db.collection('codes')
     var snapshot = await codeRef.where('code', '==', maincode).get();
@@ -285,32 +480,49 @@ exports.generateCode = functions.region('asia-northeast1').https.onRequest(async
       id = doc.id
       
     })
-    var codeRef = db.collection('codes').doc(doc.id);
-    let updateSingle = await codeRef.update({senddStatus: true});
+    var codeRef = db.collection('codes').doc(id);
+    let updateSingle = await codeRef.update({sendStatus: status});
 
     res.set('Access-Control-Allow-Origin', '*');
     res.status(200).send('更新成功');
   }catch(err){
+    res.set('Access-Control-Allow-Origin', '*');
     res.status(400).send(err);
   } 
 });
 
 //////////get all 序號//////////
-exports.generateCode = functions.region('asia-northeast1').https.onRequest(async (req, res) => {
+exports.getCode = functions.region('asia-northeast1').https.onRequest(async (req, res) => {
   try{
-    if(req.method !== "POST") throw 'Please send a POST request'
+    
     var arr=[]
-    var code = req.body.code
-    var status = req.body.sendStatus
+    var codes = {}
     var codeRef = db.collection('codes')
     var snapshot = await codeRef.get();
     snapshot.forEach(doc => {
-      arr.push(doc.data())
+      var datamonth = doc.data().time.toDate().getUTCMonth() + 1; //months from 1-12
+      var datayear = doc.data().time.toDate().getUTCFullYear(); //months from 1-12
+      var datadate = doc.data().time.toDate().getUTCDate();
+      var datahour = doc.data().time.toDate().getUTCHours();
+      var datamin = doc.data().time.toDate().getUTCMinutes();
+      var datasecond = doc.data().time.toDate().getUTCSeconds();
+      if(datamonth == new Date(Date.now()).getUTCMonth() + 1 && datayear == new Date(Date.now()).getUTCFullYear()){
+        codes = doc.data();
+        codes['date'] = datayear + '-' + datamonth + '-' + datadate + ' ' + datahour + ':' + datamin + ':' + datasecond
+        arr.push(codes)
+        codes = {}
+      }
+     
     })
-    
+    arr.sort(function(a,b){
+      // Turn your strings into dates, and then subtract them
+      // to get a value that is either negative, positive, or zero.
+      return new Date(b.time) - new Date(a.time);
+    });
     res.set('Access-Control-Allow-Origin', '*');
     res.status(200).send(arr);
   }catch(err){
+    res.set('Access-Control-Allow-Origin', '*');
     res.status(400).send(err);
   } 
 });
@@ -345,60 +557,60 @@ exports.inputCode = functions.region('asia-northeast1').https.onRequest(async (r
       if(obj['usedStatus'] == true){
         throw '此序號已用過'
       }
-
-      var datayear = obj['deadline'].toDate().getUTCFullYear(); 
+      arr.push(obj)
+      // var datayear = obj['deadline'].toDate().getUTCFullYear(); 
       
-      var datamonth = obj['deadline'].toDate().getUTCMonth() + 1; //months from 1-12
+      // var datamonth = obj['deadline'].toDate().getUTCMonth() + 1; //months from 1-12
      
-      var datadate = obj['deadline'].toDate().getUTCDate();
+      // var datadate = obj['deadline'].toDate().getUTCDate();
      
-      var datahour = obj['deadline'].toDate().getUTCHours();
+      // var datahour = obj['deadline'].toDate().getUTCHours();
   
-      var datamin = obj['deadline'].toDate().getUTCMinutes();
+      // var datamin = obj['deadline'].toDate().getUTCMinutes();
       
-      var datasecond= obj['deadline'].toDate().getUTCSeconds();
+      // var datasecond= obj['deadline'].toDate().getUTCSeconds();
 
-      if(datayear<year){//compare year
-        throw 'It has expired'
-      }else if(datayear>year){
+      // if(datayear<year){//compare year
+      //   throw 'It has expired'
+      // }else if(datayear>year){
         
-        arr.push(obj)
-      }else if(datayear = year){
-        if(datamonth<month){//compare month
-          throw 'It has expired'
-        }else if(datamonth>month){
+      //   arr.push(obj)
+      // }else if(datayear = year){
+      //   if(datamonth<month){//compare month
+      //     throw 'It has expired'
+      //   }else if(datamonth>month){
          
-          arr.push(obj)
-        }else if(datamonth = month){
-          if(datadate<date){//compare date
-            throw 'It has expired'
-          }else if(datadate>date){
+      //     arr.push(obj)
+      //   }else if(datamonth = month){
+      //     if(datadate<date){//compare date
+      //       throw 'It has expired'
+      //     }else if(datadate>date){
           
-            arr.push(obj)
-          }else if(datadate = date){
-            if(datahour<hour){//compare hour
-              throw 'It has expired'
-            }else if(datahour>hour){
+      //       arr.push(obj)
+      //     }else if(datadate = date){
+      //       if(datahour<hour){//compare hour
+      //         throw 'It has expired'
+      //       }else if(datahour>hour){
             
-              arr.push(obj)
-            }else if(datahour = hour){
-              if(datamin<min){//compare min
-                throw 'It has expired'
-              }else if(datamin>min){
+      //         arr.push(obj)
+      //       }else if(datahour = hour){
+      //         if(datamin<min){//compare min
+      //           throw 'It has expired'
+      //         }else if(datamin>min){
             
-                arr.push(obj)
-              }else if(datamin = min){
-                if(datasec<=sec){
-                  throw 'It has expired'
-                }else if(datasec>sec){
+      //           arr.push(obj)
+      //         }else if(datamin = min){
+      //           if(datasec<=sec){
+      //             throw 'It has expired'
+      //           }else if(datasec>sec){
            
-                  arr.push(obj)
-                }
-              }
-            }
-          }
-        }
-      }
+      //             arr.push(obj)
+      //           }
+      //         }
+      //       }
+      //     }
+      //   }
+      // }
      
       
     })
@@ -437,7 +649,7 @@ exports.inputCode = functions.region('asia-northeast1').https.onRequest(async (r
     res.status(200).send('加值成功！');
 
   }catch(err){
-
+    res.set('Access-Control-Allow-Origin', '*');
     res.status(400).send(err);
 
   } 
@@ -450,15 +662,16 @@ exports.addPost = functions.region('asia-northeast1').https.onRequest(async (req
     
     if(req.method !== "POST") throw "Please send a POST request";
     if(!req.body.description) throw '請提供佈告欄內容！'
-    if(!req.body.time) throw '請提供日期！'
+    console.log(req.body.description)
     if(!req.body.title) throw '請提供標題！'
     const bulletinRef = db.collection('bulletin');
     var set1 = await bulletinRef.add({
-      description: req.body.description, time: req.body.time, title: req.body.title
+      description: req.body.description, time: new Date(Date.now()), title: req.body.title
     });
     res.set('Access-Control-Allow-Origin', '*');
     res.status(200).send('成功增加文章');
   }catch(err){
+    res.set('Access-Control-Allow-Origin', '*');
     res.status(400).send(err);
   }
   
@@ -500,11 +713,12 @@ exports.getUserLoginRecord = functions.region('asia-northeast1').https.onRequest
     res.set('Access-Control-Allow-Origin', '*');
     res.status(200).send(arr);
   }catch(err){
+    res.set('Access-Control-Allow-Origin', '*');
     res.status(400).send(err);
   } 
 });
 
-//////交易紀錄//////
+//////交易規則//////
 exports.getTransactionRule = functions.region('asia-northeast1').https.onRequest(async (req, res) => {
   try{
  
@@ -532,6 +746,94 @@ exports.getTransactionRule = functions.region('asia-northeast1').https.onRequest
     res.set('Access-Control-Allow-Origin', '*');
     res.status(200).send(arr);
   }catch(err){
+    res.set('Access-Control-Allow-Origin', '*');
     res.status(400).send(err);
   } 
+});
+
+/////用戶組清單//////
+exports.getAllUsers = functions.region('asia-northeast1').https.onRequest(async (req, res) => {
+  try{
+ 
+    
+    let arr = []; 
+    var userRef = db.collection('customer')
+    var snapshot = await userRef.get()
+    if (snapshot.empty) throw "無使用者"
+    snapshot.forEach(doc => {
+      arr.push(doc.data()) 
+    })
+
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(200).send(arr);
+  }catch(err){
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(400).send(err);
+  } 
+});
+
+/////員工組清單//////
+exports.getAllEmployees = functions.region('asia-northeast1').https.onRequest(async (req, res) => {
+  try{
+
+    let arr = []; 
+    var userRef = db.collection('employees')
+    var snapshot = await userRef.get()
+    if (snapshot.empty) throw "無使用者"
+    snapshot.forEach(doc => {
+      arr.push(doc.data()) 
+    })
+
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(200).send(arr);
+  }catch(err){
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(400).send(err);
+  } 
+});
+
+//////////修改規則//////////
+exports.addrule = functions.region('asia-northeast1').https.onRequest((req, res) => {
+  cors(req, res, () => {
+
+  try{
+    
+    if(req.method !== "POST") throw "Please send a POST request";
+    if(!req.body.contents) throw '請提供內容！'
+    if(!req.body.page) throw '請提供修改內容！'
+    const specification_rule = db.collection('specification_rule').doc(req.body.page);
+    var set1 = specification_rule.update({
+      contents: req.body.contents
+    });
+    res.status(200).send('成功修改規則');
+  }catch(err){
+    res.status(400).send(err);
+  }
+  });
+  
+});
+
+//////取得規則//////
+exports.getrule = functions.region('asia-northeast1').https.onRequest((req, res) => {
+  cors(req, res, () => {
+  try{
+    let arr = []; 
+    let cityRef = db.collection('specification_rule').doc(req.query.page);
+    let getDoc = cityRef.get()
+      .then(doc => {
+        if (!doc.exists) {
+          throw '頁面不存在';
+        } else {
+          res.status(200).send(doc.data());
+        }
+      })
+      .catch(err => {
+        res.status(400).send(err);
+      });
+    
+  }catch(err){
+    res.status(400).send(err);
+  } 
+  });
+  
 });
