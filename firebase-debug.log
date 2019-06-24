@@ -1,0 +1,303 @@
+[debug] [2019-06-24T14:10:48.157Z] ----------------------------------------------------------------------
+[debug] [2019-06-24T14:10:48.158Z] Command:       /usr/local/Cellar/node/12.1.0/bin/node /usr/local/bin/firebase deploy --only functions
+[debug] [2019-06-24T14:10:48.158Z] CLI Version:   7.0.1
+[debug] [2019-06-24T14:10:48.159Z] Platform:      darwin
+[debug] [2019-06-24T14:10:48.159Z] Node Version:  v12.1.0
+[debug] [2019-06-24T14:10:48.163Z] Time:          Mon Jun 24 2019 22:10:48 GMT+0800 (台北標準時間)
+[debug] [2019-06-24T14:10:48.164Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2019-06-24T14:10:48.172Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2019-06-24T14:10:48.172Z] > authorizing via signed-in user
+[debug] [2019-06-24T14:10:48.172Z] [iam] checking project dct-transaction for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[debug] [2019-06-24T14:10:48.174Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2019-06-24T14:10:48.174Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ <request body omitted>
+[debug] [2019-06-24T14:10:48.337Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:10:48.354Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/dct-transaction:testIamPermissions  
+
+[debug] [2019-06-24T14:10:49.314Z] <<< HTTP RESPONSE 200
+[warn] ⚠  functions: package.json indicates an outdated version of firebase-functions.
+ Please upgrade using npm install --save firebase-functions@latest in your functions directory.
+[info] 
+[info] === Deploying to 'dct-transaction'...
+[info] 
+[info] i  deploying functions
+[debug] [2019-06-24T14:10:50.674Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "serve": "firebase serve --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "8"
+  },
+  "dependencies": {
+    "firebase-admin": "~7.0.0",
+    "firebase-functions": "^2.3.0",
+    "random-date-generator": "^1.0.2",
+    "uuid": "^3.3.2",
+    "child-process-promise": "^2.2.1",
+    "cors": "^2.8.5",
+    "file-system": "^2.2.2",
+    "os": "^0.1.1",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "firebase-functions-test": "^0.1.6"
+  },
+  "private": true
+}
+[info] i  functions: ensuring necessary APIs are enabled...
+[debug] [2019-06-24T14:10:50.675Z] >>> HTTP REQUEST GET https://servicemanagement.googleapis.com/v1/services/cloudfunctions.googleapis.com/projectSettings/dct-transaction?view=CONSUMER_VIEW  
+ 
+[debug] [2019-06-24T14:10:50.676Z] >>> HTTP REQUEST GET https://servicemanagement.googleapis.com/v1/services/runtimeconfig.googleapis.com/projectSettings/dct-transaction?view=CONSUMER_VIEW  
+ 
+[debug] [2019-06-24T14:10:52.413Z] <<< HTTP RESPONSE 200
+[info] ✔  functions: all necessary APIs are enabled
+[debug] [2019-06-24T14:10:52.465Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:10:52.465Z] >>> HTTP REQUEST GET https://cloudresourcemanager.googleapis.com/v1/projects/dct-transaction  
+ 
+[debug] [2019-06-24T14:10:53.480Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:10:53.481Z] >>> HTTP REQUEST GET https://mobilesdk-pa.googleapis.com/v1/projects/542889058361:getServerAppConfig  
+ 
+[debug] [2019-06-24T14:10:53.904Z] <<< HTTP RESPONSE 200
+[info] i  functions: preparing functions directory for uploading...
+[debug] [2019-06-24T14:10:53.907Z] >>> HTTP REQUEST GET https://runtimeconfig.googleapis.com/v1beta1/projects/dct-transaction/configs  
+ 
+[debug] [2019-06-24T14:10:54.903Z] <<< HTTP RESPONSE 200
+[info] i  functions: packaged functions (35.46 KB) for uploading
+[debug] [2019-06-24T14:10:55.110Z] >>> HTTP REQUEST POST https://cloudfunctions.googleapis.com/v1/projects/dct-transaction/locations/us-central1/functions:generateUploadUrl  
+ 
+[debug] [2019-06-24T14:10:55.514Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:10:55.515Z] >>> HTTP REQUEST PUT https://storage.googleapis.com/gcf-upload-us-central1-e6272f1e-515b-4ab3-87cf-2bca5d829fe3/5fcf9962-3022-4602-a041-73314d0d0620.zip?GoogleAccessId=service-542889058361@gcf-admin-robot.iam.gserviceaccount.com&Expires=1561387255&Signature=foY3M5IjcF7Qr9fINHjGQyew4%2BULgi7jHlYvYFXJGmRaJAeTdOMcKgAmLXzXg4TXBthYojiBy8oa8fhXY1tDISY9E5lJwXZfc%2FjfOig4LcOx3y3t5TpysQm%2FermoDeNPtXgRbaCuV1UVmOfIqjYY4pxdWXuSadx8kmMBbJznXyUaWnEMQL2bnowc12slBRh6HqXaGqVi2UQd7tY6TwGUU62FIou5J7NigP5L0b40bsu4RlZSnm5r1O412GfjBmwlGH8rJjQUjyrrwQHoxkxuk7%2FmsLMGXy1fEby5NHY7lR5BlnwWxs6kmNrXL8Hs6o%2FBOFxm7foFqfD8PFN9ym379w%3D%3D  
+
+[debug] [2019-06-24T14:10:56.123Z] <<< HTTP RESPONSE 200
+[info] ✔  functions: functions folder uploaded successfully
+[debug] [2019-06-24T14:10:56.127Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/projects/dct-transaction/locations/-/functions  
+ 
+[debug] [2019-06-24T14:10:56.693Z] <<< HTTP RESPONSE 200
+[info] i  functions: updating Node.js 8 function auth(asia-northeast1)...
+[debug] [2019-06-24T14:10:56.699Z] Trigger is:  {"httpsTrigger":{}}
+[info] i  functions: updating Node.js 8 function getUserRecord(asia-northeast1)...
+[debug] [2019-06-24T14:10:56.700Z] Trigger is:  {"httpsTrigger":{}}
+[info] i  functions: updating Node.js 8 function getAllUserRecord(asia-northeast1)...
+[debug] [2019-06-24T14:10:56.701Z] Trigger is:  {"httpsTrigger":{}}
+[info] i  functions: updating Node.js 8 function getEmployeeRecord(asia-northeast1)...
+[debug] [2019-06-24T14:10:56.701Z] Trigger is:  {"httpsTrigger":{}}
+[info] i  functions: updating Node.js 8 function getAllEmployeeRecord(asia-northeast1)...
+[debug] [2019-06-24T14:10:56.701Z] Trigger is:  {"httpsTrigger":{}}
+[info] i  functions: updating Node.js 8 function getUserRechargeRecord(asia-northeast1)...
+[debug] [2019-06-24T14:10:56.701Z] Trigger is:  {"httpsTrigger":{}}
+[info] i  functions: updating Node.js 8 function getAllRechargeRecord(asia-northeast1)...
+[debug] [2019-06-24T14:10:56.701Z] Trigger is:  {"httpsTrigger":{}}
+[info] i  functions: updating Node.js 8 function getUserChargeRecord(asia-northeast1)...
+[debug] [2019-06-24T14:10:56.702Z] Trigger is:  {"httpsTrigger":{}}
+[info] i  functions: updating Node.js 8 function getAllUserChargeRecord(asia-northeast1)...
+[debug] [2019-06-24T14:10:56.702Z] Trigger is:  {"httpsTrigger":{}}
+[info] i  functions: updating Node.js 8 function generateCode(asia-northeast1)...
+[debug] [2019-06-24T14:10:56.702Z] Trigger is:  {"httpsTrigger":{}}
+[info] i  functions: updating Node.js 8 function changeCodeRule(asia-northeast1)...
+[debug] [2019-06-24T14:10:56.703Z] Trigger is:  {"httpsTrigger":{}}
+[info] i  functions: updating Node.js 8 function getCode(asia-northeast1)...
+[debug] [2019-06-24T14:10:56.703Z] Trigger is:  {"httpsTrigger":{}}
+[info] i  functions: updating Node.js 8 function inputCode(asia-northeast1)...
+[debug] [2019-06-24T14:10:56.704Z] Trigger is:  {"httpsTrigger":{}}
+[info] i  functions: updating Node.js 8 function addPost(asia-northeast1)...
+[debug] [2019-06-24T14:10:56.704Z] Trigger is:  {"httpsTrigger":{}}
+[info] i  functions: updating Node.js 8 function getUserLoginRecord(asia-northeast1)...
+[debug] [2019-06-24T14:10:56.704Z] Trigger is:  {"httpsTrigger":{}}
+[info] i  functions: updating Node.js 8 function getTransactionRule(asia-northeast1)...
+[debug] [2019-06-24T14:10:56.705Z] Trigger is:  {"httpsTrigger":{}}
+[info] i  functions: updating Node.js 8 function getAllUsers(asia-northeast1)...
+[debug] [2019-06-24T14:10:56.705Z] Trigger is:  {"httpsTrigger":{}}
+[info] i  functions: updating Node.js 8 function getAllEmployees(asia-northeast1)...
+[debug] [2019-06-24T14:10:56.705Z] Trigger is:  {"httpsTrigger":{}}
+[info] i  functions: updating Node.js 8 function addrule(asia-northeast1)...
+[debug] [2019-06-24T14:10:56.706Z] Trigger is:  {"httpsTrigger":{}}
+[info] i  functions: updating Node.js 8 function getrule(asia-northeast1)...
+[debug] [2019-06-24T14:10:56.706Z] Trigger is:  {"httpsTrigger":{}}
+[info] i  functions: updating Node.js 8 function getstaffQRRecord(asia-northeast1)...
+[debug] [2019-06-24T14:10:56.706Z] Trigger is:  {"httpsTrigger":{}}
+[info] i  functions: updating Node.js 8 function getcustomerQRRecord(asia-northeast1)...
+[debug] [2019-06-24T14:10:56.706Z] Trigger is:  {"httpsTrigger":{}}
+[info] i  functions: updating Node.js 8 function modifyComputer(asia-northeast1)...
+[debug] [2019-06-24T14:10:56.706Z] Trigger is:  {"httpsTrigger":{}}
+[info] i  functions: updating Node.js 8 function getsalaryRecord(asia-northeast1)...
+[debug] [2019-06-24T14:10:56.707Z] Trigger is:  {"httpsTrigger":{}}
+[info] i  functions: updating Node.js 8 function writeOff(asia-northeast1)...
+[debug] [2019-06-24T14:10:56.707Z] Trigger is:  {"httpsTrigger":{}}
+[info] i  functions: updating Node.js 8 function addemployee(asia-northeast1)...
+[debug] [2019-06-24T14:10:56.707Z] Trigger is:  {"httpsTrigger":{}}
+[info] 
+The following functions are found in your project but do not exist in your local source code:
+	getstaffRecord(asia-northeast1)
+
+If you are renaming a function or changing its region, it is recommended that you create the new function first before deleting the old one to prevent event loss. For more info, visit https://firebase.google.com/docs/functions/manage-functions#modify
+
+[info] i  functions: continuing with other deployments.
+[debug] [2019-06-24T14:20:21.120Z] >>> HTTP REQUEST GET https://servicemanagement.googleapis.com/v1/services/cloudscheduler.googleapis.com/projectSettings/dct-transaction?view=CONSUMER_VIEW  
+ 
+[debug] [2019-06-24T14:20:22.904Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:22.911Z] >>> HTTP REQUEST PATCH https://cloudfunctions.googleapis.com/v1/projects/dct-transaction/locations/asia-northeast1/functions/auth {"updateMask":"sourceUploadUrl,name,labels,runtime,httpsTrigger"} 
+
+[debug] [2019-06-24T14:20:22.912Z] >>> HTTP REQUEST PATCH https://cloudfunctions.googleapis.com/v1/projects/dct-transaction/locations/asia-northeast1/functions/getUserRecord {"updateMask":"sourceUploadUrl,name,labels,runtime,httpsTrigger"} 
+
+[debug] [2019-06-24T14:20:22.912Z] >>> HTTP REQUEST PATCH https://cloudfunctions.googleapis.com/v1/projects/dct-transaction/locations/asia-northeast1/functions/getAllUserRecord {"updateMask":"sourceUploadUrl,name,labels,runtime,httpsTrigger"} 
+
+[debug] [2019-06-24T14:20:22.913Z] >>> HTTP REQUEST PATCH https://cloudfunctions.googleapis.com/v1/projects/dct-transaction/locations/asia-northeast1/functions/getEmployeeRecord {"updateMask":"sourceUploadUrl,name,labels,runtime,httpsTrigger"} 
+
+[debug] [2019-06-24T14:20:22.913Z] >>> HTTP REQUEST PATCH https://cloudfunctions.googleapis.com/v1/projects/dct-transaction/locations/asia-northeast1/functions/getAllEmployeeRecord {"updateMask":"sourceUploadUrl,name,labels,runtime,httpsTrigger"} 
+
+[debug] [2019-06-24T14:20:22.914Z] >>> HTTP REQUEST PATCH https://cloudfunctions.googleapis.com/v1/projects/dct-transaction/locations/asia-northeast1/functions/getUserRechargeRecord {"updateMask":"sourceUploadUrl,name,labels,runtime,httpsTrigger"} 
+
+[debug] [2019-06-24T14:20:22.914Z] >>> HTTP REQUEST PATCH https://cloudfunctions.googleapis.com/v1/projects/dct-transaction/locations/asia-northeast1/functions/getAllRechargeRecord {"updateMask":"sourceUploadUrl,name,labels,runtime,httpsTrigger"} 
+
+[debug] [2019-06-24T14:20:22.914Z] >>> HTTP REQUEST PATCH https://cloudfunctions.googleapis.com/v1/projects/dct-transaction/locations/asia-northeast1/functions/getUserChargeRecord {"updateMask":"sourceUploadUrl,name,labels,runtime,httpsTrigger"} 
+
+[debug] [2019-06-24T14:20:22.915Z] >>> HTTP REQUEST PATCH https://cloudfunctions.googleapis.com/v1/projects/dct-transaction/locations/asia-northeast1/functions/getAllUserChargeRecord {"updateMask":"sourceUploadUrl,name,labels,runtime,httpsTrigger"} 
+
+[debug] [2019-06-24T14:20:22.919Z] >>> HTTP REQUEST PATCH https://cloudfunctions.googleapis.com/v1/projects/dct-transaction/locations/asia-northeast1/functions/generateCode {"updateMask":"sourceUploadUrl,name,labels,runtime,httpsTrigger"} 
+
+[debug] [2019-06-24T14:20:22.919Z] >>> HTTP REQUEST PATCH https://cloudfunctions.googleapis.com/v1/projects/dct-transaction/locations/asia-northeast1/functions/changeCodeRule {"updateMask":"sourceUploadUrl,name,labels,runtime,httpsTrigger"} 
+
+[debug] [2019-06-24T14:20:22.920Z] >>> HTTP REQUEST PATCH https://cloudfunctions.googleapis.com/v1/projects/dct-transaction/locations/asia-northeast1/functions/getCode {"updateMask":"sourceUploadUrl,name,labels,runtime,httpsTrigger"} 
+
+[debug] [2019-06-24T14:20:22.920Z] >>> HTTP REQUEST PATCH https://cloudfunctions.googleapis.com/v1/projects/dct-transaction/locations/asia-northeast1/functions/inputCode {"updateMask":"sourceUploadUrl,name,labels,runtime,httpsTrigger"} 
+
+[debug] [2019-06-24T14:20:22.920Z] >>> HTTP REQUEST PATCH https://cloudfunctions.googleapis.com/v1/projects/dct-transaction/locations/asia-northeast1/functions/addPost {"updateMask":"sourceUploadUrl,name,labels,runtime,httpsTrigger"} 
+
+[debug] [2019-06-24T14:20:22.920Z] >>> HTTP REQUEST PATCH https://cloudfunctions.googleapis.com/v1/projects/dct-transaction/locations/asia-northeast1/functions/getUserLoginRecord {"updateMask":"sourceUploadUrl,name,labels,runtime,httpsTrigger"} 
+
+[debug] [2019-06-24T14:20:22.921Z] >>> HTTP REQUEST PATCH https://cloudfunctions.googleapis.com/v1/projects/dct-transaction/locations/asia-northeast1/functions/getTransactionRule {"updateMask":"sourceUploadUrl,name,labels,runtime,httpsTrigger"} 
+
+[debug] [2019-06-24T14:20:22.921Z] >>> HTTP REQUEST PATCH https://cloudfunctions.googleapis.com/v1/projects/dct-transaction/locations/asia-northeast1/functions/getAllUsers {"updateMask":"sourceUploadUrl,name,labels,runtime,httpsTrigger"} 
+
+[debug] [2019-06-24T14:20:22.922Z] >>> HTTP REQUEST PATCH https://cloudfunctions.googleapis.com/v1/projects/dct-transaction/locations/asia-northeast1/functions/getAllEmployees {"updateMask":"sourceUploadUrl,name,labels,runtime,httpsTrigger"} 
+
+[debug] [2019-06-24T14:20:22.922Z] >>> HTTP REQUEST PATCH https://cloudfunctions.googleapis.com/v1/projects/dct-transaction/locations/asia-northeast1/functions/addrule {"updateMask":"sourceUploadUrl,name,labels,runtime,httpsTrigger"} 
+
+[debug] [2019-06-24T14:20:22.924Z] >>> HTTP REQUEST PATCH https://cloudfunctions.googleapis.com/v1/projects/dct-transaction/locations/asia-northeast1/functions/getrule {"updateMask":"sourceUploadUrl,name,labels,runtime,httpsTrigger"} 
+
+[debug] [2019-06-24T14:20:22.924Z] >>> HTTP REQUEST PATCH https://cloudfunctions.googleapis.com/v1/projects/dct-transaction/locations/asia-northeast1/functions/getstaffQRRecord {"updateMask":"sourceUploadUrl,name,labels,runtime,httpsTrigger"} 
+
+[debug] [2019-06-24T14:20:22.926Z] >>> HTTP REQUEST PATCH https://cloudfunctions.googleapis.com/v1/projects/dct-transaction/locations/asia-northeast1/functions/getcustomerQRRecord {"updateMask":"sourceUploadUrl,name,labels,runtime,httpsTrigger"} 
+
+[debug] [2019-06-24T14:20:22.926Z] >>> HTTP REQUEST PATCH https://cloudfunctions.googleapis.com/v1/projects/dct-transaction/locations/asia-northeast1/functions/modifyComputer {"updateMask":"sourceUploadUrl,name,labels,runtime,httpsTrigger"} 
+
+[debug] [2019-06-24T14:20:22.927Z] >>> HTTP REQUEST PATCH https://cloudfunctions.googleapis.com/v1/projects/dct-transaction/locations/asia-northeast1/functions/getsalaryRecord {"updateMask":"sourceUploadUrl,name,labels,runtime,httpsTrigger"} 
+
+[debug] [2019-06-24T14:20:22.927Z] >>> HTTP REQUEST PATCH https://cloudfunctions.googleapis.com/v1/projects/dct-transaction/locations/asia-northeast1/functions/writeOff {"updateMask":"sourceUploadUrl,name,labels,runtime,httpsTrigger"} 
+
+[debug] [2019-06-24T14:20:22.927Z] >>> HTTP REQUEST PATCH https://cloudfunctions.googleapis.com/v1/projects/dct-transaction/locations/asia-northeast1/functions/addemployee {"updateMask":"sourceUploadUrl,name,labels,runtime,httpsTrigger"} 
+
+[debug] [2019-06-24T14:20:23.186Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:23.233Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:23.234Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:23.235Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:23.237Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:23.238Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:23.239Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:23.240Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:23.241Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:23.242Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:23.244Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:23.247Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:23.252Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:23.257Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:23.261Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:23.262Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:23.284Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:23.367Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:23.384Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:23.453Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:23.454Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:23.461Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:23.477Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:23.488Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:23.489Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:23.490Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:23.493Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/projects/dct-transaction/locations/-/functions  
+ 
+[debug] [2019-06-24T14:20:23.958Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:23.961Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGN0LXRyYW5zYWN0aW9uL2FzaWEtbm9ydGhlYXN0MS9hdXRoL3lrOHRKWFZyc0k0  
+ 
+[debug] [2019-06-24T14:20:23.962Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGN0LXRyYW5zYWN0aW9uL2FzaWEtbm9ydGhlYXN0MS9nZXRVc2VyUmVjb3JkL0lTSi0tVGVGQi1V  
+ 
+[debug] [2019-06-24T14:20:23.962Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGN0LXRyYW5zYWN0aW9uL2FzaWEtbm9ydGhlYXN0MS9nZXRBbGxVc2VyUmVjb3JkL2lJZjlmLUZCWXhz  
+ 
+[debug] [2019-06-24T14:20:23.962Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGN0LXRyYW5zYWN0aW9uL2FzaWEtbm9ydGhlYXN0MS9nZXRFbXBsb3llZVJlY29yZC9nMXE3cmhtODgxTQ  
+ 
+[debug] [2019-06-24T14:20:23.962Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGN0LXRyYW5zYWN0aW9uL2FzaWEtbm9ydGhlYXN0MS9nZXRBbGxFbXBsb3llZVJlY29yZC9QcGE4RDhIYkwzdw  
+ 
+[debug] [2019-06-24T14:20:23.963Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGN0LXRyYW5zYWN0aW9uL2FzaWEtbm9ydGhlYXN0MS9nZXRVc2VyUmVjaGFyZ2VSZWNvcmQvMTlsRnppdVRjQzA  
+ 
+[debug] [2019-06-24T14:20:23.963Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGN0LXRyYW5zYWN0aW9uL2FzaWEtbm9ydGhlYXN0MS9nZXRBbGxSZWNoYXJnZVJlY29yZC9tR2FFQkhaUUFGbw  
+ 
+[debug] [2019-06-24T14:20:23.963Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGN0LXRyYW5zYWN0aW9uL2FzaWEtbm9ydGhlYXN0MS9nZXRVc2VyQ2hhcmdlUmVjb3JkL2FQYVRnbHlNdGRZ  
+ 
+[debug] [2019-06-24T14:20:23.963Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGN0LXRyYW5zYWN0aW9uL2FzaWEtbm9ydGhlYXN0MS9nZXRBbGxVc2VyQ2hhcmdlUmVjb3JkL1pDTTkyMld3RF9z  
+ 
+[debug] [2019-06-24T14:20:23.963Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGN0LXRyYW5zYWN0aW9uL2FzaWEtbm9ydGhlYXN0MS9nZW5lcmF0ZUNvZGUvZ043OHI0RkZpbjA  
+ 
+[debug] [2019-06-24T14:20:23.963Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGN0LXRyYW5zYWN0aW9uL2FzaWEtbm9ydGhlYXN0MS9jaGFuZ2VDb2RlUnVsZS8xeEhqRzNFSnNyNA  
+ 
+[debug] [2019-06-24T14:20:23.964Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGN0LXRyYW5zYWN0aW9uL2FzaWEtbm9ydGhlYXN0MS9nZXRDb2RlL2hsTklCaXhFMHlr  
+ 
+[debug] [2019-06-24T14:20:23.964Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGN0LXRyYW5zYWN0aW9uL2FzaWEtbm9ydGhlYXN0MS9pbnB1dENvZGUvOUl6R1BVWXlDVEE  
+ 
+[debug] [2019-06-24T14:20:23.964Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGN0LXRyYW5zYWN0aW9uL2FzaWEtbm9ydGhlYXN0MS9hZGRQb3N0L1VLdW1Yd2hiOXZB  
+ 
+[debug] [2019-06-24T14:20:23.964Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGN0LXRyYW5zYWN0aW9uL2FzaWEtbm9ydGhlYXN0MS9nZXRVc2VyTG9naW5SZWNvcmQvR3hRX3JUd05EblU  
+ 
+[debug] [2019-06-24T14:20:23.964Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGN0LXRyYW5zYWN0aW9uL2FzaWEtbm9ydGhlYXN0MS9nZXRUcmFuc2FjdGlvblJ1bGUvcGkwem5SNEtQX3M  
+ 
+[debug] [2019-06-24T14:20:23.964Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGN0LXRyYW5zYWN0aW9uL2FzaWEtbm9ydGhlYXN0MS9nZXRBbGxVc2Vycy85N21zLUIwS3VmMA  
+ 
+[debug] [2019-06-24T14:20:23.965Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGN0LXRyYW5zYWN0aW9uL2FzaWEtbm9ydGhlYXN0MS9nZXRBbGxFbXBsb3llZXMvV3UzNEpTZG82ODQ  
+ 
+[debug] [2019-06-24T14:20:23.965Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGN0LXRyYW5zYWN0aW9uL2FzaWEtbm9ydGhlYXN0MS9hZGRydWxlL1dURWp0N2s2dG5V  
+ 
+[debug] [2019-06-24T14:20:23.965Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGN0LXRyYW5zYWN0aW9uL2FzaWEtbm9ydGhlYXN0MS9nZXRydWxlLzU5VVdBaTk5ZVAw  
+ 
+[debug] [2019-06-24T14:20:23.965Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGN0LXRyYW5zYWN0aW9uL2FzaWEtbm9ydGhlYXN0MS9nZXRzdGFmZlFSUmVjb3JkL1cteThCeDBoNV9j  
+ 
+[debug] [2019-06-24T14:20:23.965Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGN0LXRyYW5zYWN0aW9uL2FzaWEtbm9ydGhlYXN0MS9nZXRjdXN0b21lclFSUmVjb3JkL0pNbVVJQWZ6SWxN  
+ 
+[debug] [2019-06-24T14:20:23.965Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGN0LXRyYW5zYWN0aW9uL2FzaWEtbm9ydGhlYXN0MS9tb2RpZnlDb21wdXRlci9vVkVFUTBPRG80Yw  
+ 
+[debug] [2019-06-24T14:20:23.966Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGN0LXRyYW5zYWN0aW9uL2FzaWEtbm9ydGhlYXN0MS9nZXRzYWxhcnlSZWNvcmQvcTVJaG13S1hpeTQ  
+ 
+[debug] [2019-06-24T14:20:23.966Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGN0LXRyYW5zYWN0aW9uL2FzaWEtbm9ydGhlYXN0MS93cml0ZU9mZi9DZDh4d2hlNkJ2RQ  
+ 
+[debug] [2019-06-24T14:20:23.966Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1/operations/ZGN0LXRyYW5zYWN0aW9uL2FzaWEtbm9ydGhlYXN0MS9hZGRlbXBsb3llZS92Vms4Y1BqT3cyUQ  
+ 
+[debug] [2019-06-24T14:20:24.123Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:24.133Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:24.135Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:24.137Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:24.137Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:24.138Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:24.141Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:24.142Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:24.143Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:24.144Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:24.145Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:24.146Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:24.146Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:24.149Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:24.158Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:24.161Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:24.161Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:24.162Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:24.163Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:24.163Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:24.165Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:24.173Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:24.174Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:24.175Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:24.182Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-24T14:20:24.190Z] <<< HTTP RESPONSE 200

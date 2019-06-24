@@ -3,7 +3,7 @@ const functions = require('firebase-functions');
 const uuidv4 = require('uuid/v4');
 let DateGenerator = require('random-date-generator');
 const cors = require('cors')({origin: true});
-
+var FieldValue = require('firebase-admin').firestore.FieldValue;
 // The Firebase Admin SDK to access the Firebase Realtime Database.
 const admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
@@ -460,10 +460,10 @@ exports.generateCode = functions.region('asia-northeast1').https.onRequest(async
       arr.push(code)
     }
     
-    res.set('Access-Control-Allow-Origin', '*');
+    res.set({ 'Access-Control-Allow-Origin': '*' }).sendStatus(200)
     res.status(200).send(arr);
   }catch(err){
-    res.set('Access-Control-Allow-Origin', '*');
+    res.set({ 'Access-Control-Allow-Origin': '*' }).sendStatus(200)
     res.status(400).send(err);
   } 
 });
@@ -668,10 +668,10 @@ exports.addPost = functions.region('asia-northeast1').https.onRequest(async (req
     var set1 = await bulletinRef.add({
       description: req.body.description, time: new Date(Date.now()), title: req.body.title
     });
-    res.set('Access-Control-Allow-Origin', '*');
+    res.set({ 'Access-Control-Allow-Origin': '*' }).sendStatus(200);
     res.status(200).send('成功增加文章');
   }catch(err){
-    res.set('Access-Control-Allow-Origin', '*');
+    res.set({ 'Access-Control-Allow-Origin': '*' }).sendStatus(200);
     res.status(400).send(err);
   }
   
@@ -835,5 +835,231 @@ exports.getrule = functions.region('asia-northeast1').https.onRequest((req, res)
     res.status(400).send(err);
   } 
   });
+  
+});
+
+//////////get員工QRC/////////
+exports.getstaffQRRecord = functions.region('asia-northeast1').https.onRequest(async (req, res) => {
+  try{
+    
+    var arr=[]
+    var transer = {}
+    var qr_staff_transfer_record = db.collection('qr_staff_transfer_record')
+    var snapshot = await qr_staff_transfer_record.get();
+    snapshot.forEach(doc => {
+      var datamonth = doc.data().time.toDate().getUTCMonth() + 1; //months from 1-12
+      var datayear = doc.data().time.toDate().getUTCFullYear(); //months from 1-12
+      var datadate = doc.data().time.toDate().getUTCDate();
+      var datahour = doc.data().time.toDate().getUTCHours();
+      var datamin = doc.data().time.toDate().getUTCMinutes();
+      var datasecond = doc.data().time.toDate().getUTCSeconds();
+      if(datamonth == new Date(Date.now()).getUTCMonth() + 1 && datayear == new Date(Date.now()).getUTCFullYear()){
+        transer = doc.data();
+        transer['date'] = datayear + '-' + datamonth + '-' + datadate + ' ' + datahour + ':' + datamin + ':' + datasecond
+        arr.push(transer);
+        transer = {};
+      }
+     
+    })
+    arr.sort(function(a,b){
+      // Turn your strings into dates, and then subtract them
+      // to get a value that is either negative, positive, or zero.
+      return new Date(b.time) - new Date(a.time);
+    });
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(200).send(arr);
+  }catch(err){
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(400).send(err);
+  } 
+});
+
+//////////get消費者QRC/////////
+exports.getcustomerQRRecord = functions.region('asia-northeast1').https.onRequest(async (req, res) => {
+  try{
+    
+    var arr=[]
+    var transer = {}
+    var qr_customer_transfer_record = db.collection('qr_customer_transfer_record')
+    var snapshot = await qr_customer_transfer_record.get();
+    var transer_ = {}
+    var qr_charge_record = db.collection('qr_charge_record')
+    var snapshot1 = await qr_charge_record.get();
+    snapshot.forEach(doc => {
+      var datamonth = doc.data().time.toDate().getUTCMonth() + 1; //months from 1-12
+      var datayear = doc.data().time.toDate().getUTCFullYear(); //months from 1-12
+      var datadate = doc.data().time.toDate().getUTCDate();
+      var datahour = doc.data().time.toDate().getUTCHours();
+      var datamin = doc.data().time.toDate().getUTCMinutes();
+      var datasecond = doc.data().time.toDate().getUTCSeconds();
+      if(datamonth == new Date(Date.now()).getUTCMonth() + 1 && datayear == new Date(Date.now()).getUTCFullYear()){
+        transer = doc.data();
+        transer['date'] = datayear + '-' + datamonth + '-' + datadate + ' ' + datahour + ':' + datamin + ':' + datasecond
+        arr.push(transer)
+        transer = {}
+      }
+     
+    })
+    snapshot1.forEach(doc => {
+      var datamonth = doc.data().time.toDate().getUTCMonth() + 1; //months from 1-12
+      var datayear = doc.data().time.toDate().getUTCFullYear(); //months from 1-12
+      var datadate = doc.data().time.toDate().getUTCDate();
+      var datahour = doc.data().time.toDate().getUTCHours();
+      var datamin = doc.data().time.toDate().getUTCMinutes();
+      var datasecond = doc.data().time.toDate().getUTCSeconds();
+      if(datamonth == new Date(Date.now()).getUTCMonth() + 1 && datayear == new Date(Date.now()).getUTCFullYear()){
+        transer_ = doc.data();
+        transer_['date'] = datayear + '-' + datamonth + '-' + datadate + ' ' + datahour + ':' + datamin + ':' + datasecond
+        arr.push(transer_)
+        transer_ = {}
+      }
+     
+    })
+    arr.sort(function(a,b){
+      // Turn your strings into dates, and then subtract them
+      // to get a value that is either negative, positive, or zero.
+      return new Date(b.time) - new Date(a.time);
+    });
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(200).send(arr);
+  }catch(err){
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(400).send(err);
+  } 
+});
+
+//////////更新設備//////////
+exports.modifyComputer = functions.region('asia-northeast1').https.onRequest((req, res) => {
+  cors(req, res, () => {
+
+  try{
+    
+    if(req.method !== "POST") throw "Please send a POST request";
+    if(!req.body.userid) throw '錯誤ID！'
+    if(!req.body.computer) throw '請提供修改內容！'
+    const modify_user_computer = db.collection('customer').doc(req.body.userid);
+    var set1 = modify_user_computer.update({
+      computer: req.body.computer
+    });
+    res.status(200).send('成功修改規則');
+  }catch(err){
+    res.status(400).send(err);
+  }
+  });
+  
+});
+
+/////薪轉紀錄//////
+exports.getsalaryRecord = functions.region('asia-northeast1').https.onRequest(async (req, res) => {
+  try{
+    
+    var arr=[]
+    var salary = {}
+    var salary_record = db.collection('salary_record')
+    var snapshot = await salary_record.get();
+    snapshot.forEach(doc => {
+      var datamonth = doc.data().time.toDate().getUTCMonth() + 1; //months from 1-12
+      var datayear = doc.data().time.toDate().getUTCFullYear(); //months from 1-12
+      var datadate = doc.data().time.toDate().getUTCDate();
+      var datahour = doc.data().time.toDate().getUTCHours();
+      var datamin = doc.data().time.toDate().getUTCMinutes();
+      var datasecond = doc.data().time.toDate().getUTCSeconds();
+      if(datamonth == new Date(Date.now()).getUTCMonth() + 1 && datayear == new Date(Date.now()).getUTCFullYear()){
+        salary = doc.data();
+        salary['date'] = datayear + '-' + datamonth + '-' + datadate + ' ' + datahour + ':' + datamin + ':' + datasecond
+        arr.push(salary);
+        salary = {};
+      }
+     
+    })
+    arr.sort(function(a,b){
+      // Turn your strings into dates, and then subtract them
+      // to get a value that is either negative, positive, or zero.
+      return new Date(b.time) - new Date(a.time);
+    });
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(200).send(arr);
+  }catch(err){
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(400).send(err);
+  } 
+});
+
+
+//////////銷帳//////////
+exports.writeOff = functions.region('asia-northeast1').https.onRequest((req, res) => {
+  cors(req, res, () => {
+    
+
+  try{  
+    if(req.method !== "POST") throw "Please send a POST request";
+    if(!req.body.phone) throw '錯誤電話！'
+    if(!req.body.point) throw '請輸入金額'
+    let arr = []; 
+    var userRef = db.collection('employees')
+    var queryRef = userRef.where('phone', '==', req.body.phone);
+    queryRef.get().then(function(querySnapshot) {
+     querySnapshot.forEach(function(doc) {
+      var dic = doc.data();
+      var amount = dic.point;
+      var balance = amount-parseInt(req.body.point);
+      var id = dic.userID;
+      var changePoint = db.collection('employees').doc(id);
+      var set1 = changePoint.update({
+        point: balance
+      });
+      const addwriteOff = db.collection('salary_record');
+      var set2 =  addwriteOff.add({
+            point: balance,
+            phone: req.body.phone,
+            name: dic.name,
+            FBname: dic.FBname,
+            writeoffPoint: req.body.point,
+            time:FieldValue.serverTimestamp(),
+            remark:req.body.remark,
+      });
+
+    });
+   });
+    
+    res.status(200).send('成功銷帳');
+  }catch(err){
+    res.status(400).send(err);
+  }
+  });
+  
+});
+
+//////////員工註冊//////////
+exports.addemployee = functions.region('asia-northeast1').https.onRequest(async (req, res) => {
+  try{
+    if(req.method !== "POST") throw "Please send a POST request";
+    if(!req.body.phone) throw '請提供電話!'
+    const bulletinRef = db.collection('employees');
+    var queryRef = bulletinRef.where('phone', '==', req.body.phone);
+    queryRef.get().then(function(querySnapshot) {
+     querySnapshot.forEach(function(doc) {
+          res.status(200).send(doc.data());
+
+      });
+     });
+    var set1 =  bulletinRef.add({
+            userID: bulletinRef.id,
+            point: 0,
+            vip: 0,
+            phone: req.body.phone,
+            name: null,
+            FBname: null,
+            photo: null,
+            device: null,
+            computer: null,
+    });
+
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(200).send('成功新增帳號');
+  }catch(err){
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(400).send(err);
+  }
   
 });
