@@ -659,7 +659,6 @@ exports.inputCode = functions.region('asia-northeast1').https.onRequest(async (r
 //////////佈告欄//////////
 exports.addPost = functions.region('asia-northeast1').https.onRequest(async (req, res) => {
   try{
-    
     if(req.method !== "POST") throw "Please send a POST request";
     if(!req.body.description) throw '請提供佈告欄內容！'
     console.log(req.body.description)
@@ -668,10 +667,10 @@ exports.addPost = functions.region('asia-northeast1').https.onRequest(async (req
     var set1 = await bulletinRef.add({
       description: req.body.description, time: new Date(Date.now()), title: req.body.title
     });
-    res.set({ 'Access-Control-Allow-Origin': '*' }).sendStatus(200);
+    res.set({ 'Access-Control-Allow-Origin': '*' })
     res.status(200).send('成功增加文章');
   }catch(err){
-    res.set({ 'Access-Control-Allow-Origin': '*' }).sendStatus(200);
+    res.set({ 'Access-Control-Allow-Origin': '*' });
     res.status(400).send(err);
   }
   
@@ -793,16 +792,15 @@ exports.getAllEmployees = functions.region('asia-northeast1').https.onRequest(as
 });
 
 //////////修改規則//////////
-exports.addrule = functions.region('asia-northeast1').https.onRequest((req, res) => {
-  cors(req, res, () => {
+exports.addrule = functions.region('asia-northeast1').https.onRequest(async(req, res) => {
 
   try{
     
     if(req.method !== "POST") throw "Please send a POST request";
     if(!req.body.contents) throw '請提供內容！'
     if(!req.body.page) throw '請提供修改內容！'
-    const specification_rule = db.collection('specification_rule').doc(req.body.page);
-    var set1 = specification_rule.update({
+    const specification_rule = await db.collection('specification_rule').doc(req.body.page);
+    var set1 = await specification_rule.update({
       contents: req.body.contents
     });
     res.status(200).send('成功修改規則');
@@ -810,8 +808,6 @@ exports.addrule = functions.region('asia-northeast1').https.onRequest((req, res)
     res.status(400).send(err);
   }
   });
-  
-});
 
 //////取得規則//////
 exports.getrule = functions.region('asia-northeast1').https.onRequest((req, res) => {
@@ -837,7 +833,7 @@ exports.getrule = functions.region('asia-northeast1').https.onRequest((req, res)
   });
   
 });
-
+  
 //////////get員工QRC/////////
 exports.getstaffQRRecord = functions.region('asia-northeast1').https.onRequest(async (req, res) => {
   try{
@@ -929,16 +925,15 @@ exports.getcustomerQRRecord = functions.region('asia-northeast1').https.onReques
 });
 
 //////////更新設備//////////
-exports.modifyComputer = functions.region('asia-northeast1').https.onRequest((req, res) => {
-  cors(req, res, () => {
+exports.modifyComputer = functions.region('asia-northeast1').https.onRequest(async(req, res) => {
 
   try{
     
     if(req.method !== "POST") throw "Please send a POST request";
     if(!req.body.userid) throw '錯誤ID！'
     if(!req.body.computer) throw '請提供修改內容！'
-    const modify_user_computer = db.collection('customer').doc(req.body.userid);
-    var set1 = modify_user_computer.update({
+    const modify_user_computer = await db.collection('customer').doc(req.body.userid);
+    var set1 = await modify_user_computer.update({
       computer: req.body.computer
     });
     res.status(200).send('成功修改規則');
@@ -946,8 +941,6 @@ exports.modifyComputer = functions.region('asia-northeast1').https.onRequest((re
     res.status(400).send(err);
   }
   });
-  
-});
 
 /////薪轉紀錄//////
 exports.getsalaryRecord = functions.region('asia-northeast1').https.onRequest(async (req, res) => {
@@ -1031,20 +1024,19 @@ exports.writeOff = functions.region('asia-northeast1').https.onRequest((req, res
 });
 
 //////////員工註冊//////////
-exports.addemployee = functions.region('asia-northeast1').https.onRequest(async (req, res) => {
+exports.addemployee = functions.region('asia-northeast1').https.onRequest(async(req, res) => {
   try{
     if(req.method !== "POST") throw "Please send a POST request";
     if(!req.body.phone) throw '請提供電話!'
-    const bulletinRef = db.collection('employees');
-    var queryRef = bulletinRef.where('phone', '==', req.body.phone);
-    queryRef.get().then(function(querySnapshot) {
-     querySnapshot.forEach(function(doc) {
-          res.status(200).send(doc.data());
-
-      });
-     });
-    var set1 =  bulletinRef.add({
-            userID: bulletinRef.id,
+    const bulletinRef = db.collection('employees');  
+    var snapshot1 = await bulletinRef.where('phone', '==', req.body.phone).get();
+    if(!snapshot1.empty) throw 'Already have a employee user!'
+    const customerRef = db.collection('customer');  
+    var snapshot2 = await customerRef.where('phone', '==', req.body.phone).get();
+    if(!snapshot2.empty) throw 'Already have a customer user!'
+    const bulletinRefSet = await db.collection('employees').doc(); 
+    var set1 =  await bulletinRefSet.set({
+            userID: bulletinRefSet.id,
             point: 0,
             vip: 0,
             phone: req.body.phone,
@@ -1053,8 +1045,7 @@ exports.addemployee = functions.region('asia-northeast1').https.onRequest(async 
             photo: null,
             device: null,
             computer: null,
-    });
-
+    })
     res.set('Access-Control-Allow-Origin', '*');
     res.status(200).send('成功新增帳號');
   }catch(err){
