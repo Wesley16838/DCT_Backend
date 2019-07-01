@@ -1054,3 +1054,91 @@ exports.addemployee = functions.region('asia-northeast1').https.onRequest(async(
   }
   
 });
+
+//////////員工註銷//////////
+exports.deletemployee = functions.region('asia-northeast1').https.onRequest(async(req, res) => {
+  try{
+    if(req.method !== "POST") throw "Please send a POST request";
+    if(!req.body.phone) throw '請提供電話!'
+    const employeeAcc = db.collection('employees');  
+    var snapshot1 = await employeeAcc.where('phone', '==', req.body.phone).get();
+    if(snapshot1.empty) throw '沒有此員工!'
+    snapshot1.forEach(doc => {
+      doc.ref.delete();
+  })
+
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(200).send('成功刪除帳號');
+  }catch(err){
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(400).send(err);
+  }
+  
+});
+
+
+//////////使用者註銷//////////
+exports.deleteUser = functions.region('asia-northeast1').https.onRequest(async(req, res) => {
+  try{
+    if(req.method !== "POST") throw "Please send a POST request";
+    if(!req.body.phone) throw '請提供電話!'
+    const employeeAcc = db.collection('customer');  
+    var snapshot1 = await employeeAcc.where('phone', '==', req.body.phone).get();
+    if(snapshot1.empty) throw '沒有此使用者!'
+    snapshot1.forEach(doc => {
+      doc.ref.delete();
+  })
+
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(200).send('成功刪除帳號');
+  }catch(err){
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(400).send(err);
+  }
+  
+});
+
+//////////轉薪時間範圍//////////
+exports.salary_dateTime = functions.region('asia-northeast1').https.onRequest(async(req, res) => {
+  try{
+    let arr = []; 
+    if(req.method !== "POST") throw "Please send a POST request";
+    if(!req.body.phone) throw '請提供電話!'
+    const employeeAcc = db.collection('salary_record');  
+    var snapshot1 = await employeeAcc.where('time', '>=', req.body.startTime).where('time', '<=', req.body.endTime).get();
+    if(snapshot1.empty) throw '沒有此時間範圍!'
+    snapshot1.forEach(doc => {
+      arr.push(doc.data())
+  })
+
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(200).send(arr);
+  }catch(err){
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(400).send(err);
+  }
+  
+});
+
+//////////查訊帳號//////////
+exports.queryAcc = functions.region('asia-northeast1').https.onRequest(async(req, res) => {
+  try{
+    let arr = []; 
+    if(req.method !== "POST") throw "Please send a POST request";
+    if(!req.body.phone) throw '請提供電話!'
+    if(!req.body.page) throw '錯誤!'
+    const queryRef = db.collection(req.body.page);  
+    var snapshot1 = await queryRef.where('phone', '==', req.body.phone).get();
+    if(snapshot1.empty) throw '沒有此用戶!'
+    snapshot1.forEach(doc => {
+      arr.push(doc.data())
+  })
+
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(200).send(arr);
+  }catch(err){
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(400).send(err);
+  }
+  
+});
