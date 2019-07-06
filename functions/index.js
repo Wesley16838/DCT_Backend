@@ -1099,17 +1099,17 @@ exports.deleteUser = functions.region('asia-northeast1').https.onRequest(async(r
 });
 
 //////////轉薪時間範圍//////////
-exports.salary_dateTime = functions.region('asia-northeast1').https.onRequest(async(req, res) => {
+exports.salaryDateTime = functions.region('asia-northeast1').https.onRequest(async(req, res) => {
   try{
     let arr = []; 
-    if(req.method !== "POST") throw "Please send a POST request";
-    if(!req.body.phone) throw '請提供電話!'
     const employeeAcc = db.collection('salary_record');  
-    var snapshot1 = await employeeAcc.where('time', '>=', req.body.startTime).where('time', '<=', req.body.endTime).get();
+    var snapshot1 = await employeeAcc.where("time", ">=", req.query.starTime).where("time", "<=", req.query.endTime).get();
     if(snapshot1.empty) throw '沒有此時間範圍!'
     snapshot1.forEach(doc => {
-      arr.push(doc.data())
+      arr.push(doc.data());
+      console.log(doc.data());
   })
+   
 
     res.set('Access-Control-Allow-Origin', '*');
     res.status(200).send(arr);
@@ -1124,15 +1124,13 @@ exports.salary_dateTime = functions.region('asia-northeast1').https.onRequest(as
 exports.queryAcc = functions.region('asia-northeast1').https.onRequest(async(req, res) => {
   try{
     let arr = []; 
-    if(req.method !== "POST") throw "Please send a POST request";
-    if(!req.body.phone) throw '請提供電話!'
-    if(!req.body.page) throw '錯誤!'
-    const queryRef = db.collection(req.body.page);  
-    var snapshot1 = await queryRef.where('phone', '==', req.body.phone).get();
+    const queryRef = db.collection(req.query.page);  
+    var snapshot1 = await queryRef.where('phone', '==', req.query.phone).get();
     if(snapshot1.empty) throw '沒有此用戶!'
     snapshot1.forEach(doc => {
-      arr.push(doc.data())
+      arr.push(doc.data());
   })
+
 
     res.set('Access-Control-Allow-Origin', '*');
     res.status(200).send(arr);
