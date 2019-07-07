@@ -3,7 +3,7 @@ const functions = require('firebase-functions');
 const uuidv4 = require('uuid/v4');
 let DateGenerator = require('random-date-generator');
 const cors = require('cors')({origin: true});
-
+const express = require("express")
 // The Firebase Admin SDK to access the Firebase Realtime Database.
 const admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
@@ -435,14 +435,14 @@ exports.getAllUserChargeRecord = functions.region('asia-northeast1').https.onReq
 
 //////////發送序號//////////
 exports.generateCode = functions.region('asia-northeast1').https.onRequest(async (req, res) => {
+  
   try{
+    console.log('1')
     if(req.method !== "POST") throw 'Please send a POST request'
     var arr=[];
     var point = req.body.point;//鑽石數量
     var quantity = req.body.quantity;//生成數量
     var vipPoint = req.body.vipPoint;//vip點數
-
-  console.log(req.body)
   
     for(var i = 0; i<quantity; i++){
         console.log(i)
@@ -538,7 +538,7 @@ exports.inputCode = functions.region('asia-northeast1').https.onRequest(async (r
     var maincode = req.body.code;
     var arr = []
     var obj = {}
-   var id1;
+    var id1;
     var codeRef = db.collection('codes');
   
     var snapshot = await codeRef.where('code', '==', maincode).get();
@@ -658,23 +658,21 @@ exports.inputCode = functions.region('asia-northeast1').https.onRequest(async (r
 
 //////////佈告欄//////////
 exports.addPost = functions.region('asia-northeast1').https.onRequest(async (req, res) => {
-  try{
-    
+  cors(req, res, () => {
     if(req.method !== "POST") throw "Please send a POST request";
-    if(!req.body.description) throw '請提供佈告欄內容！'
-    console.log(req.body.description)
-    if(!req.body.title) throw '請提供標題！'
-    const bulletinRef = db.collection('bulletin');
-    var set1 = await bulletinRef.add({
-      description: req.body.description, time: new Date(Date.now()), title: req.body.title
+        if(!req.body.description) throw '請提供佈告欄內容！'
+        console.log(req.body.description)
+        if(!req.body.title) throw '請提供標題！'
+        const bulletinRef = db.collection('bulletin');
+        var set1 = bulletinRef.add({
+          description: req.body.description, time: new Date(Date.now()), title: req.body.title
+        }).then(ref => {
+          res.status(200).send('成功增加文章');
+        })
+         .catch(err => {
+          res.status(400).send(err);
     });
-    res.set('Access-Control-Allow-Origin', '*');
-    res.status(200).send('成功增加文章');
-  }catch(err){
-    res.set('Access-Control-Allow-Origin', '*');
-    res.status(400).send(err);
-  }
-  
+  })
 });
 
 ///////////登入紀錄////////////
@@ -793,16 +791,15 @@ exports.getAllEmployees = functions.region('asia-northeast1').https.onRequest(as
 });
 
 //////////修改規則//////////
-exports.addrule = functions.region('asia-northeast1').https.onRequest((req, res) => {
+exports.addrule = functions.region('asia-northeast1').https.onRequest(async (req, res) => {
   cors(req, res, () => {
-
   try{
     
     if(req.method !== "POST") throw "Please send a POST request";
     if(!req.body.contents) throw '請提供內容！'
     if(!req.body.page) throw '請提供修改內容！'
     const specification_rule = db.collection('specification_rule').doc(req.body.page);
-    var set1 = specification_rule.update({
+    var set1 =  specification_rule.update({
       contents: req.body.contents
     });
     res.status(200).send('成功修改規則');
