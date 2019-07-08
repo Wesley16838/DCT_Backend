@@ -495,9 +495,9 @@ exports.changeCodeRule = functions.region('asia-northeast1').https.onRequest(asy
 exports.getCode = functions.region('asia-northeast1').https.onRequest(async (req, res) => {
   try{
     
-    var arr=[]
-    var codes = {}
-    var codeRef = db.collection('codes')
+    var arr=[];
+    var codes = {};
+    var codeRef = db.collection('codes');
     var snapshot = await codeRef.get();
     snapshot.forEach(doc => {
       var datamonth = doc.data().time.toDate().getUTCMonth() + 1; //months from 1-12
@@ -509,8 +509,8 @@ exports.getCode = functions.region('asia-northeast1').https.onRequest(async (req
       if(datamonth == new Date(Date.now()).getUTCMonth() + 1 && datayear == new Date(Date.now()).getUTCFullYear()){
         codes = doc.data();
         codes['date'] = datayear + '-' + datamonth + '-' + datadate + ' ' + datahour + ':' + datamin + ':' + datasecond
-        arr.push(codes)
-        codes = {}
+        arr.push(codes);
+        codes = {};
       }
      
     })
