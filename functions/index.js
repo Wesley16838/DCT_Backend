@@ -283,7 +283,7 @@ exports.getAllRechargeRecord = functions.region('asia-northeast1').https.onReque
         var datahour = doc.data().PaymentDate.toDate().getUTCHours();
         var datamin = doc.data().PaymentDate.toDate().getUTCMinutes();
         var datasecond = doc.data().PaymentDate.toDate().getUTCSeconds();
-        if(datamonth == new Date(Date.now()).getUTCMonth() + 1 && datayear == new Date(Date.now()).getUTCFullYear()){
+        // if(datamonth == new Date(Date.now()).getUTCMonth() + 1 && datayear == new Date(Date.now()).getUTCFullYear()){
           
           recharges = doc.data();
           recharges['PaymentDate'] = datayear + '-' + datamonth + '-' + datadate + ' ' + datahour + ':' + datamin + ':' + datasecond
@@ -291,10 +291,10 @@ exports.getAllRechargeRecord = functions.region('asia-northeast1').https.onReque
           arr.push(recharges);
           console.log(recharges)
           recharges = {};
-        }
+        // }
       
     });
-
+    if(arr.length == 0) throw '本月尚無儲值紀錄！'
     arr = arr.sort(function (a, b) {
       return a.day > b.day ? 1 : -1;//
      });
@@ -314,6 +314,10 @@ exports.getUserChargeRecord = functions.region('asia-northeast1').https.onReques
     let arr = [];
     let employeeid = req.query.employeeid;
     var employeeRef = db.collection('employees').doc(employeeid)
+    var employee = await employeeRef.get()
+    if (!employee.exists) {
+      throw '員工不存在'
+    }
     var chargeRef = db.collection('transaction')
     var nextEmployeeRef = db.collection('employees')
     var nextCustomerRef = db.collection('customer')
@@ -499,26 +503,33 @@ exports.getCode = functions.region('asia-northeast1').https.onRequest(async (req
     var codes = {}
     var codeRef = db.collection('codes')
     var snapshot = await codeRef.get();
+    
     snapshot.forEach(doc => {
+     
       var datamonth = doc.data().time.toDate().getUTCMonth() + 1; //months from 1-12
+     
       var datayear = doc.data().time.toDate().getUTCFullYear(); //months from 1-12
       var datadate = doc.data().time.toDate().getUTCDate();
       var datahour = doc.data().time.toDate().getUTCHours();
       var datamin = doc.data().time.toDate().getUTCMinutes();
       var datasecond = doc.data().time.toDate().getUTCSeconds();
-      if(datamonth == new Date(Date.now()).getUTCMonth() + 1 && datayear == new Date(Date.now()).getUTCFullYear()){
+      // if(datamonth == new Date(Date.now()).getUTCMonth() + 1 && datayear == new Date(Date.now()).getUTCFullYear()){
+     
         codes = doc.data();
+       
         codes['date'] = datayear + '-' + datamonth + '-' + datadate + ' ' + datahour + ':' + datamin + ':' + datasecond
         arr.push(codes)
         codes = {}
-      }
+      // }
      
     })
+ 
     arr.sort(function(a,b){
       // Turn your strings into dates, and then subtract them
       // to get a value that is either negative, positive, or zero.
       return new Date(b.time) - new Date(a.time);
     });
+    console.log(arr)
     res.set('Access-Control-Allow-Origin', '*');
     res.status(200).send(arr);
   }catch(err){
