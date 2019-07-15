@@ -12,7 +12,7 @@ const path = require('path');
 const os = require('os');
 const fs = require('fs');
 var db = admin.firestore();
-
+process.env.TZ = 'Asia/Taipei';
 /////////////////Verify Token//////////////////
 exports.auth = functions.region('asia-northeast1').https.onRequest(async (req, res) => {
   try{
@@ -1018,8 +1018,12 @@ exports.deleteUser = functions.region('asia-northeast1').https.onRequest(async(r
 exports.salaryDateTime = functions.region('asia-northeast1').https.onRequest(async(req, res) => {
   try{
     let arr = []; 
+    if(!req.query.starTime) throw '請提供起始日期!'
+    if(!req.query.endTime) throw '請提供結束日期!'
     const employeeAcc = db.collection('salary_record');  
-    var snapshot1 = await employeeAcc.where("time", ">=", req.query.starTime).where("time", "<=", req.query.endTime).get();
+    let start = new Date(req.query.starTime);
+    let end = new Date(req.query.endTime);
+    var snapshot1 = await employeeAcc.where("time", ">=", start).where("time", "<=", end).get();
     if(snapshot1.empty) throw '沒有此時間範圍!'
     snapshot1.forEach(doc => {
       arr.push(doc.data());
@@ -1190,4 +1194,262 @@ exports.QueryDepositRecord = functions.region('asia-northeast1').https.onRequest
     res.set('Access-Control-Allow-Origin', '*');
     res.status(400).send(err);
   } 
+});
+
+
+//////////取得總儲值//////////
+exports.getRechargeTotal = functions.region('asia-northeast1').https.onRequest(async(req, res) => {
+  try{
+    let arr = [];
+    var recharge = {};
+    var total=0;
+    var monthTotal=0;
+    let dateyear = new Date(Date.now()).getUTCFullYear();
+    let datemonth = new Date(Date.now()).getUTCMonth()+1;
+    let dateday = new Date(Date.now()).getUTCDate();
+    let start = new Date(dateyear+'-'+datemonth+'-'+'01');
+    let end = new Date(dateyear+'-'+datemonth+'-'+'31');
+    let today = new Date(dateyear+'-'+datemonth+'-'+dateday);
+    let todayend = new Date(dateyear+'-'+datemonth+'-'+(dateday+1));
+    const employeeAcc = db.collection('Recharge');
+
+    var snapshot1 = await employeeAcc.where("PaymentDate", ">=", today).where("PaymentDate", "<", todayend).get();
+    if(snapshot1.empty)
+    {
+      recharge['RechargeDayTotal'] = 0;
+    }
+    snapshot1.forEach(doc => {
+      if((doc.data().TradeAmount)===+(doc.data().TradeAmount))
+      {
+        total += doc.data().TradeAmount;
+      }      
+    })
+   recharge['RechargeDayTotal'] = total;
+   var snapshot2 = await employeeAcc.where("PaymentDate", ">=", start).where("PaymentDate", "<=", end).get();
+
+   if(snapshot2.empty)
+    {
+      recharge['RechargeMonthTotal'] = 0;
+    }
+    snapshot2.forEach(doc => {
+      if((doc.data().TradeAmount)===+(doc.data().TradeAmount))
+      {
+        monthTotal += doc.data().TradeAmount;
+        
+      }
+    })
+    recharge['RechargeMonthTotal'] = monthTotal;
+
+    arr.push(recharge);
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(200).send(arr);
+  }catch(err){
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(400).send(err);
+  }
+  
+  
+});
+
+//////////取得顧客總轉帳//////////
+exports.getCustomerTansferTotal = functions.region('asia-northeast1').https.onRequest(async(req, res) => {
+  try{
+    let arr = [];
+    var total=0;
+    var monthTotal=0;
+    var transfer = {};
+    let dateyear = new Date(Date.now()).getUTCFullYear();
+    let datemonth = new Date(Date.now()).getUTCMonth()+1;
+    let dateday = new Date(Date.now()).getUTCDate();
+    let start = new Date(dateyear+'-'+datemonth+'-'+'01');
+    let end = new Date(dateyear+'-'+datemonth+'-'+'31');
+    let today = new Date(dateyear+'-'+datemonth+'-'+dateday);
+    let todayend = new Date(dateyear+'-'+datemonth+'-'+(dateday+1));
+    const employeeAcc = db.collection('customerTransaction');  
+    var snapshot1 = await employeeAcc.where("time", ">=", today).where("time", "<", todayend).get();
+    if(snapshot1.empty)
+    {
+      transfer['CustomerTransferDayTotal'] = 0;
+    }
+    snapshot1.forEach(doc => {
+      if((doc.data().transaction_point)===+(doc.data().transaction_point))
+      {
+        total += doc.data().transaction_point;
+      }      
+    })
+    transfer['CustomerTransferDayTotal'] = total;
+   var snapshot2 = await employeeAcc.where("time", ">=", start).where("time", "<=", end).get();
+
+   if(snapshot2.empty)
+    {
+      transfer['CustomerTransferMonthTotal'] = 0;
+    }
+    snapshot2.forEach(doc => {
+      if((doc.data().transaction_point)===+(doc.data().transaction_point))
+      {
+        monthTotal += doc.data().transaction_point;
+      }      
+    })
+  transfer['CustomerTransferMonthTotal'] = monthTotal;
+    arr.push(transfer);
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(200).send(arr);
+  }catch(err){
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(400).send(err);
+  }
+  
+  
+});
+
+//////////取得員工總轉帳//////////
+exports.getEmpolyeeTansferTotal = functions.region('asia-northeast1').https.onRequest(async(req, res) => {
+  try{
+    let arr = [];
+    var total=0;
+    var monthTotal=0;
+    var transfer = {};
+    let dateyear = new Date(Date.now()).getUTCFullYear();
+    let datemonth = new Date(Date.now()).getUTCMonth()+1;
+    let dateday = new Date(Date.now()).getUTCDate();
+    let start = new Date(dateyear+'-'+datemonth+'-'+'01');
+    let end = new Date(dateyear+'-'+datemonth+'-'+'31');
+    let today = new Date(dateyear+'-'+datemonth+'-'+dateday);
+    let todayend = new Date(dateyear+'-'+datemonth+'-'+(dateday+1));
+    const employeeAcc = db.collection('employeeTransaction');  
+    var snapshot1 = await employeeAcc.where("time", ">=", today).where("time", "<", todayend).get();
+    if(snapshot1.empty)
+    {
+      transfer['EmployeeTransferDayTotal'] = 0;
+    }
+    snapshot1.forEach(doc => {
+      if((doc.data().transaction_point)===+(doc.data().transaction_point))
+      {
+        total += doc.data().transaction_point;
+      }      
+    })
+    transfer['EmployeeTransferDayTotal'] = total;
+   var snapshot2 = await employeeAcc.where("time", ">=", start).where("time", "<=", end).get();
+
+   if(snapshot2.empty)
+    {
+      transfer['EmployeeTransferMonthTotal'] = 0;
+    }
+    snapshot2.forEach(doc => {
+      if((doc.data().transaction_point)===+(doc.data().transaction_point))
+      {
+        monthTotal += doc.data().transaction_point;
+      }      
+    })
+   transfer['EmployeeTransferMonthTotal'] = monthTotal;
+    arr.push(transfer);
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(200).send(arr);
+  }catch(err){
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(400).send(err);
+  }
+  
+  
+});
+
+//////////取得總交易//////////
+exports.getTansactionTotal = functions.region('asia-northeast1').https.onRequest(async(req, res) => {
+  try{
+    let arr = [];
+    var total=0;
+    var monthTotal=0;
+    var transction = {};
+    let dateyear = new Date(Date.now()).getUTCFullYear();
+    let datemonth = new Date(Date.now()).getUTCMonth()+1;
+    let dateday = new Date(Date.now()).getUTCDate();
+    let start = new Date(dateyear+'-'+datemonth+'-'+'01');
+    let end = new Date(dateyear+'-'+datemonth+'-'+'31');
+    let today = new Date(dateyear+'-'+datemonth+'-'+dateday);
+    let todayend = new Date(dateyear+'-'+datemonth+'-'+(dateday+1));
+    const employeeAcc = db.collection('transaction');  
+    var snapshot1 = await employeeAcc.where("time", ">=", today).where("time", "<", todayend).get();
+    if(snapshot1.empty)
+    {
+      transction['TranscationDayTotal'] = 0;
+    }
+    snapshot1.forEach(doc => {
+      if((doc.data().transaction_point)===+(doc.data().transaction_point))
+      {
+        total += doc.data().transaction_point;
+      }      
+    })
+    transction['TranscationDayTotal'] = total;
+   var snapshot2 = await employeeAcc.where("time", ">=", start).where("time", "<=", end).get();
+
+   if(snapshot2.empty)
+    {
+      transction['TranscationMonthTotal'] = 0;
+    }
+    snapshot2.forEach(doc => {
+      if((doc.data().transaction_point)===+(doc.data().transaction_point))
+      {
+        monthTotal += doc.data().transaction_point;
+      }      
+    })
+    transction['TranscationMonthTotal'] = monthTotal;
+    arr.push(transction);
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(200).send(arr);
+  }catch(err){
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(400).send(err);
+  }
+  
+  
+});
+//////////取得總轉薪//////////
+exports.getSalaryTotal = functions.region('asia-northeast1').https.onRequest(async(req, res) => {
+  try{
+    let arr = [];
+    var total=0;
+    var monthTotal=0;
+    var salary = {};
+    let dateyear = new Date(Date.now()).getUTCFullYear();
+    let datemonth = new Date(Date.now()).getUTCMonth()+1;
+    let dateday = new Date(Date.now()).getUTCDate();
+    let start = new Date(dateyear+'-'+datemonth+'-'+'01');
+    let end = new Date(dateyear+'-'+datemonth+'-'+'31');
+    let today = new Date(dateyear+'-'+datemonth+'-'+dateday);
+    let todayend = new Date(dateyear+'-'+datemonth+'-'+(dateday+1));
+    const employeeAcc = db.collection('salary_record');  
+    var snapshot1 = await employeeAcc.where("time", ">=", today).where("time", "<", todayend).get();
+    if(snapshot1.empty)
+    {
+      salary['SalaryDayTotal'] = 0;
+    }
+    snapshot1.forEach(doc => {
+      if((doc.data().writeoffPoint)===+(doc.data().writeoffPoint))
+      {
+        total += doc.data().writeoffPoint;
+      }      
+    })
+    salary['SalaryDayTotal'] = total;
+   var snapshot2 = await employeeAcc.where("time", ">=", start).where("time", "<=", end).get();
+
+   if(snapshot2.empty)
+    {
+      salary['SalaryMonthTotal'] = 0;
+    }
+    snapshot2.forEach(doc => {
+      if((doc.data().writeoffPoint)===+(doc.data().writeoffPoint))
+      {
+        monthTotal += doc.data().writeoffPoint;
+      }      
+    })
+    salary['SalaryMonthTotal'] = monthTotal;
+    arr.push(salary);
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(200).send(arr);
+  }catch(err){
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(400).send(err);
+  }
+  
+  
 });
