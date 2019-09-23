@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "staging": "dct-transaction",
+    "dct": "dct-demo"
+  }
+}
